@@ -1,71 +1,82 @@
-# 用于构建和部署Hugo网站到GitHub Pages的示例工作流程
-name: 发布Hugo网站到Pages
+name: 发布 Hugo 网站到 GitHub Pages
 
 on:
-  # 在目标为默认分支的推送上运行
+  # 在推送到默认分支时运行
   push:
     branches:
       - main
 
-  # 允许您手动从“Actions”标签运行此工作流程
+  # 允许手动触发
   workflow_dispatch:
 
-# 设置GITHUB_TOKEN的权限，以允许部署到GitHub Pages
+# 设置 GITHUB_TOKEN 权限
 permissions:
   contents: read
   pages: write
   id-token: write
 
-# 仅允许一个并发部署，跳过在进行中的运行与最新排队的运行之间排队的运行。
-# 但是，请不要取消进行中的运行，因为我们希望这些生产部署能够完成。
+# 并发控制：只允许一个部署正在进行
 concurrency:
   group: "pages"
   cancel-in-progress: false
 
-# 默认使用bash
 defaults:
   run:
     shell: bash
 
 jobs:
-  # 构建作业
   build:
     runs-on: ubuntu-latest
     env:
-      HUGO_VERSION: 0.120.2
+      HUGO_VERSION: 0.160.0          # ← 更新到最新稳定版（2026 年 4 月）
+      DART_SASS_VERSION: 1.99.0      # ← 推荐版本
+
     steps:
-      - name: 安装Hugo CLI
-        run: |
-          wget -O ${{ runner.temp }}/hugo.deb https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_extended_${HUGO_VERSION}_linux-amd64.deb \
-          && sudo dpkg -i ${{ runner.temp }}/hugo.deb          
-      - name: 安装Dart Sass
-        run: sudo snap install dart-sass
-      - name: 检出
+      - name: 检出仓库
         uses: actions/checkout@v4
         with:
           submodules: recursive
           fetch-depth: 0
-      - name: 设置Pages
+
+      - name: 设置 GitHub Pages
         id: pages
-        uses: actions/configure-pages@v4
-      - name: 安装Node.js依赖
-        run: "[[ -f package-lock.json || -f npm-shrinkwrap.json ]] && npm ci || true"
-      - name: 使用Hugo构建
+        uses: actions/configure-pages@v5   # ← 更新到 v5/v6
+
+      - name: 安装 Hugo CLI (Extended)
+        run: |
+          wget -O ${{ runner.temp }}/hugo.deb \
+            https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_extended_${HUGO_VERSION}_linux-amd64.deb \
+          && sudo dpkg -i ${{ runner.temp }}/hugo.deb
+
+      - name: 安装 Dart Sass（推荐方式）
+        run: |
+          mkdir -p ${{ runner.temp }}/dart-sass
+          curl -L -o ${{ runner.temp }}/dart-sass.tar.gz \
+            https://github.com/sass/dart-sass/releases/download/${DART_SASS_VERSION}/dart-sass-${DART_SASS_VERSION}-linux-x64.tar.gz
+          tar -xzf ${{ runner.temp }}/dart-sass.tar.gz -C ${{ runner.temp }}
+          echo "${{ runner.temp }}/dart-sass" >> $GITHUB_PATH
+
+      - name: 安装 Node.js 依赖（如果有）
+        run: |
+          if [[ -f package-lock.json || -f npm-shrinkwrap.json ]]; then
+            npm ci
+          fi
+
+      - name: 使用 Hugo 构建
         env:
-          # 为了与Hugo模块的最大向后兼容性
           HUGO_ENVIRONMENT: production
           HUGO_ENV: production
         run: |
           hugo \
             --gc \
             --minify \
-            --baseURL "${{ steps.pages.outputs.base_url }}/"          
+            --baseURL "${{ steps.pages.outputs.base_url }}/"
+
       - name: 上传构建产物
-        uses: actions/upload-pages-artifact@v4
+        uses: actions/upload-pages-artifact@v3   # ← 推荐 v3（更稳定）
         with:
           path: ./public
 
-  # 部署作业
   deploy:
     environment:
       name: github-pages
@@ -73,6 +84,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     steps:
-      - name: 部署到GitHub Pages
+      - name: 部署到 GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5   # ← 已更新到 v5（这是你原脚本最需要改的地方）
