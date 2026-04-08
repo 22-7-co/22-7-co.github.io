@@ -82,7 +82,8 @@ jobs:
         env:
           ALGOLIA_APP_ID: ${{ secrets.ALGOLIA_APP_ID }}
           ALGOLIA_ADMIN_KEY: ${{ secrets.ALGOLIA_ADMIN_KEY }}
-          ALGOLIA_INDEX_NAME: posts
+          # 【关键修改】：将索引名称从 'posts' 改为 '22-7-co-blog'
+          ALGOLIA_INDEX_NAME: 22-7-co-blog
         run: |
           if [ ! -f public/algolia.json ]; then
             echo "Error: public/algolia.json not found!"
@@ -106,7 +107,7 @@ jobs:
           for (( i=0; i<BATCH_COUNT; i++ )); do
             echo "正在上传第 $((i + 1)) 批..."
             
-            # 【关键修复】：按照 Algolia 官方要求，外层必须是 {"requests": [...]} 对象
+            # 【关键修改】：在 jq 查询中，将索引名称从 'posts' 改为 '22-7-co-blog'
             RESP=$(jq -c --arg index "$ALGOLIA_INDEX_NAME" ".[$i*$BATCH_SIZE:($i+1)*$BATCH_SIZE] | {requests: map({\"action\": \"addObject\", \"indexName\": \$index, \"body\": .})}" public/algolia.json | \
               curl -s -X POST "https://${ALGOLIA_APP_ID}-dsn.algolia.net/1/indexes/batch" \
               -H "X-Algolia-API-Key: ${ALGOLIA_ADMIN_KEY}" \
