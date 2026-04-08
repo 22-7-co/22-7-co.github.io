@@ -71,8 +71,13 @@ jobs:
             --gc \
             --minify \
             --baseURL "${{ steps.pages.outputs.base_url }}/"
-            
-      # ===== Algolia  =====  
+
+      - name: 上传构建产物
+        uses: actions/upload-pages-artifact@v3   # ← 推荐 v3（更稳定）
+        with:
+          path: ./public
+      
+      ##  =====  Algolia   ======
       - name: Upload to Algolia (Clear + Batch Replace)
         env:
           ALGOLIA_APP_ID: ${{ secrets.ALGOLIA_APP_ID }}
