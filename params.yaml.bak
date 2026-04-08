@@ -447,10 +447,10 @@ utterances:
 ########################################
 
 algolia_search:
-  enable: false
-  appID:
-  apiKey:
-  indexName:
+  enable: true
+  appID: "TKVENI67X7"
+  apiKey: "b7b735f31f2b57d5b218610f14268940"
+  indexName:  "posts"
   hits:
     per_page: 10
 
