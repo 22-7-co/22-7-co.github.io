@@ -78,7 +78,7 @@ jobs:
           path: ./public
       
       ##  =====  Algolia   ======
-      - name: Upload to Algolia (Clear + Batch Replace)
+            - name: Upload to Algolia (Clear + Batch Replace)
         env:
           ALGOLIA_APP_ID: ${{ secrets.ALGOLIA_APP_ID }}
           ALGOLIA_ADMIN_KEY: ${{ secrets.ALGOLIA_ADMIN_KEY }}
@@ -89,8 +89,21 @@ jobs:
             exit 1
           fi
 
+          echo "===== 开始诊断 Algolia.json ====="
+          FILE_SIZE=$(wc -c < public/algolia.json)
+          echo "文件大小: $FILE_SIZE 字节"
+          
+          # 尝试用 jq 获取长度，如果失败说明 JSON 格式不对
+          if ! JSON_LENGTH=$(jq 'length' public/algolia.json 2>/dev/null); then
+            echo "❌ 错误: algolia.json 不是标准的 JSON 数组格式，或者为空！"
+            echo "文件前100个字符如下："
+            head -c 100 public/algolia.json
+            exit 1
+          fi
+          echo "解析到的记录数量: $JSON_LENGTH"
+          echo "===== 诊断结束 ====="
+
           echo "Clearing existing index..."
-          # 【改动点1】：去掉了 CLEAR_RESP= ，直接执行，不阻塞
           curl -s -X POST \
             "https://${ALGOLIA_APP_ID}-dsn.algolia.net/1/indexes/${ALGOLIA_INDEX_NAME}/clear" \
             -H "X-Algolia-API-Key: ${ALGOLIA_ADMIN_KEY}" \
@@ -98,12 +111,22 @@ jobs:
 
           echo "Uploading new records in batches..."
           BATCH_SIZE=1000
-          BATCH_COUNT=$(jq 'length / '$BATCH_SIZE' | ceil' public/algolia.json)
+          # 计算 ceil： (长度 + 999) / 1000 ，这种纯 bash 算法比 jq 的 ceil 更稳
+          BATCH_COUNT=$(( (JSON_LENGTH + BATCH_SIZE - 1) / BATCH_SIZE ))
+
+          echo "准备分 $BATCH_COUNT 批上传..."
 
           for i in $(seq 0$((BATCH_COUNT - 1))); do
-            echo "Uploading batch $((i + 1)) of$BATCH_COUNT..."
+            echo "正在上传第 $((i + 1)) 批..."
             
-            BATCH_DATA=$(jq -c '.['$i'*'$BATCH_SIZE':('$i'+1)*'$BATCH_SIZE'] | map({"action": "addObject", "body": .})' public/algolia.json)
+            # 包装成 Algolia 要求的 batch 格式
+            BATCH_DATA=$(jq -c ".[$i*$BATCH_SIZE:($i+1)*$BATCH_SIZE] | map({\"action\": \"addObject\", \"body\": .})" public/algolia.json)
+            
+            # 如果提取不到数据，跳过这批
+            if [ "$BATCH_DATA" == "[]" ]; then
+              echo "这批为空，跳过。"
+              continue
+            fi
             
             RESP=$(curl -s -X POST \
               "https://${ALGOLIA_APP_ID}-dsn.algolia.net/1/indexes/${ALGOLIA_INDEX_NAME}/batch" \
@@ -112,16 +135,17 @@ jobs:
               -H "Content-Type: application/json" \
               -d "$BATCH_DATA")
             
-            # 【改动点2】：把原来的检查 "status":201 改成了检查 "taskID"
             if echo "$RESP" | grep -q '"taskID"'; then
-              echo "Batch $((i + 1)) uploaded successfully."
+              echo "第 $((i + 1)) 批上传成功。"
             else
-              echo "Failed to upload batch $((i + 1)):$RESP"
+              echo "❌ 第 $((i + 1)) 批上传失败！Algolia 返回内容:"
+              echo "$RESP"
               exit 1
             fi
           done
 
           echo "Algolia upload completed."
+
 
   deploy:
     environment:
