@@ -70,8 +70,9 @@ jobs:
           hugo \
             --gc \
             --minify \
-            --baseURL "${{ steps.pages.outputs.base_url }}/"]
-      ####  ==================== Algolia 搜索索引上传 ====================
+            --baseURL "${{ steps.pages.outputs.base_url }}/"
+            
+      # ===== Algolia  =====  
       - name: Upload to Algolia (Clear + Batch Replace)
         env:
           ALGOLIA_APP_ID: ${{ secrets.ALGOLIA_APP_ID }}
