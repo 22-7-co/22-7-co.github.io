@@ -102,7 +102,7 @@ jobs:
           username: ${{ secrets.QQ_EMAIL }}
           password: ${{ secrets.QQ_SMTP_AUTH }}
           subject: "【Hugo 博客】构建状态：${{ job.status }}"
-          to: ${{ secrets.QQ_EMAIL }}
+          to: "Hugo-Deploy <${{ secrets.QQ_EMAIL }}>"
           from: "Hugo-Deploy <${{ secrets.QQ_EMAIL }}>"
           body: "Hugo 博客构建完成！状态: ${{ job.status }} | 仓库: ${{ github.repository }} | 详情: https://github.com{{ github.repository }}/actions/runs/${{ github.run_id }}"
           secure: true
