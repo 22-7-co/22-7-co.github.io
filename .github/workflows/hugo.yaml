@@ -96,12 +96,14 @@ jobs:
       - name: Send QQ Email Notification
         uses: dawidd6/action-send-mail@v3
         with:
+          # 建议改用 465 端口配 secure: true，这是 QQ 邮箱最稳定的方式
           server_address: smtp.qq.com
-          server_port: 587
+          server_port: 465
           username: ${{ secrets.QQ_EMAIL }}
           password: ${{ secrets.QQ_SMTP_AUTH }}
-          subject: "【Hugo 博客】构建完成 - ${{ github.repository }}"
+          subject: "【Hugo 博客】构建状态：${{ job.status }}"
           to: ${{ secrets.QQ_EMAIL }}
-          from: ${{ secrets.QQ_EMAIL }}
-          body: "Hugo 博客构建完成！状态: ${{ job.status }}"
-          secure: false
+          from: "Hugo-Deploy <${{ secrets.QQ_EMAIL }}>"
+          body: "Hugo 博客构建完成！状态: ${{ job.status }} | 仓库: ${{ github.repository }} | 详情: https://github.com{{ github.repository }}/actions/runs/${{ github.run_id }}"
+          secure: true
+          html_body: false
