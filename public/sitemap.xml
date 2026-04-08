@@ -2,39 +2,39 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://22-7-co.github.io/post/</loc>
+    <loc>http://localhost:1313/post/</loc>
     <lastmod>2026-04-08T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://22-7-co.github.io/</loc>
+    <loc>http://localhost:1313/</loc>
     <lastmod>2026-04-08T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://22-7-co.github.io/categories/</loc>
+    <loc>http://localhost:1313/categories/</loc>
     <lastmod>2026-04-08T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://22-7-co.github.io/tags/hugo/</loc>
+    <loc>http://localhost:1313/tags/hugo/</loc>
     <lastmod>2026-04-08T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://22-7-co.github.io/tags/reimu%E4%B8%BB%E9%A2%98/</loc>
+    <loc>http://localhost:1313/tags/reimu%E4%B8%BB%E9%A2%98/</loc>
     <lastmod>2026-04-08T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://22-7-co.github.io/tags/</loc>
+    <loc>http://localhost:1313/tags/</loc>
     <lastmod>2026-04-08T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://22-7-co.github.io/tags/%E4%B8%AA%E4%BA%BA%E7%BD%91%E7%AB%99/</loc>
+    <loc>http://localhost:1313/tags/%E4%B8%AA%E4%BA%BA%E7%BD%91%E7%AB%99/</loc>
     <lastmod>2026-04-08T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://22-7-co.github.io/post/my-first-post/</loc>
+    <loc>http://localhost:1313/post/my-first-post/</loc>
     <lastmod>2026-04-08T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://22-7-co.github.io/about/</loc>
+    <loc>http://localhost:1313/about/</loc>
     <lastmod>2026-04-08T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://22-7-co.github.io/categories/%E5%BB%BA%E7%AB%99%E6%95%99%E7%A8%8B/</loc>
+    <loc>http://localhost:1313/categories/%E5%BB%BA%E7%AB%99%E6%95%99%E7%A8%8B/</loc>
     <lastmod>2026-04-08T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://22-7-co.github.io/tags/%E9%9D%99%E6%80%81%E5%8D%9A%E5%AE%A2/</loc>
+    <loc>http://localhost:1313/tags/%E9%9D%99%E6%80%81%E5%8D%9A%E5%AE%A2/</loc>
     <lastmod>2026-04-08T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://22-7-co.github.io/archives/</loc>
+    <loc>http://localhost:1313/archives/</loc>
   </url>
 </urlset>

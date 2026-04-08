@@ -2,7 +2,7 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>个人网站 on 22-7&#39;s information</title>
-    <link>https://22-7-co.github.io/tags/%E4%B8%AA%E4%BA%BA%E7%BD%91%E7%AB%99/</link>
+    <link>http://localhost:1313/tags/%E4%B8%AA%E4%BA%BA%E7%BD%91%E7%AB%99/</link>
     <description>Recent content from 22-7&#39;s information</description>
     <generator>Hugo</generator>
     <language>zh-CN</language>
@@ -15,7 +15,7 @@
     <lastBuildDate>Wed, 08 Apr 2026 00:00:00 +0000</lastBuildDate>
     
     
-    <atom:link href="https://22-7-co.github.io/tags/%E4%B8%AA%E4%BA%BA%E7%BD%91%E7%AB%99/index.xml" rel="self" type="application/rss&#43;xml" />
+    <atom:link href="http://localhost:1313/tags/%E4%B8%AA%E4%BA%BA%E7%BD%91%E7%AB%99/index.xml" rel="self" type="application/rss&#43;xml" />
     
 
     
@@ -23,10 +23,10 @@
 
     <item>
       <title>从零开始用 Hugo 搭建个人博客（搭建博客传统，第一条博客教别人搭）</title>
-      <link>https://22-7-co.github.io/post/my-first-post/</link>
+      <link>http://localhost:1313/post/my-first-post/</link>
       <pubDate>Wed, 08 Apr 2026 00:00:00 &#43;0000</pubDate>
       <author>x22han7@gmail.com (22/7.)</author>
-      <guid>https://22-7-co.github.io/post/my-first-post/</guid>
+      <guid>http://localhost:1313/post/my-first-post/</guid>
       <description>
         <![CDATA[<h1>从零开始用 Hugo 搭建个人博客（搭建博客传统，第一条博客教别人搭）</h1><p>作者：22/7.（x22han7@gmail.com）</p>
         
@@ -63,7 +63,7 @@ Finished
 <p>搭建过程中应该会遇到问题，相信你能凭借 AI 和 自己的智慧解决一切困难。</p>
 <p>下一篇文章见～</p>
         
-        <hr><p>本文2026-04-08首发于<a href='https://22-7-co.github.io/'>22-7's information</a>，最后修改于2026-04-08</p>]]>
+        <hr><p>本文2026-04-08首发于<a href='http://localhost:1313/'>22-7's information</a>，最后修改于2026-04-08</p>]]>
       </description>
       
         <category>建站教程</category>
