@@ -102,32 +102,27 @@ jobs:
           BATCH_SIZE=1000
           JSON_LENGTH=$(jq 'length' public/algolia.json)
           BATCH_COUNT=$(( (JSON_LENGTH + BATCH_SIZE - 1) / BATCH_SIZE ))
-          TEMP_FILE="temp_algolia.json"
 
-          # 使用 C 语言风格循环，彻底免疫 seq 命令报错导致的静默中断
           for (( i=0; i<BATCH_COUNT; i++ )); do
             echo "正在上传第 $((i + 1)) 批..."
             
-            jq -c ".[$i*$BATCH_SIZE:($i+1)*$BATCH_SIZE] | map({\"action\": \"addObject\", \"body\": .})" public/algolia.json > $TEMP_FILE
-            
-            RESP=$(curl -s -X POST "https://${ALGOLIA_APP_ID}-dsn.algolia.net/1/indexes/${ALGOLIA_INDEX_NAME}/batch" \
+            # 【终极方案】：jq 直接通过管道输出给 curl，绝不经过任何中间文件或变量
+            RESP=$(jq -c ".[$i*$BATCH_SIZE:($i+1)*$BATCH_SIZE] | map({\"action\": \"addObject\", \"body\": .})" public/algolia.json | \
+              curl -s -X POST "https://${ALGOLIA_APP_ID}-dsn.algolia.net/1/indexes/${ALGOLIA_INDEX_NAME}/batch" \
               -H "X-Algolia-API-Key: ${ALGOLIA_ADMIN_KEY}" \
               -H "X-Algolia-Application-Id: ${ALGOLIA_APP_ID}" \
               -H "Content-Type: application/json" \
-              -d @$TEMP_FILE)
+              -d @-)
             
             if echo "$RESP" | grep -q '"taskID"'; then
               echo "✅ 第 $((i + 1)) 批成功"
             else
               echo "❌ 失败！返回：$RESP"
-              rm -f $TEMP_FILE
               exit 1
             fi
           done
 
-          rm -f $TEMP_FILE
           echo "🎉 Algolia upload completed."
-
 
 
   deploy:
