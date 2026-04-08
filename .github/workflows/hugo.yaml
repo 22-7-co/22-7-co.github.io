@@ -56,14 +56,11 @@ jobs:
           tar -xzf ${{ runner.temp }}/dart-sass.tar.gz -C ${{ runner.temp }}
           echo "${{ runner.temp }}/dart-sass" >> $GITHUB_PATH
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: 安装 Node.js 依赖（包含 atomic-algolia）
-        run: npm ci
+      - name: 安装 Node.js 依赖（如果有）
+        run: |
+          if [[ -f package-lock.json || -f npm-shrinkwrap.json ]]; then
+            npm ci
+          fi
 
       - name: 使用 Hugo 构建
         env:
@@ -84,9 +81,20 @@ jobs:
         env:
           ALGOLIA_APP_ID: ${{ secrets.ALGOLIA_APP_ID }}
           ALGOLIA_ADMIN_KEY: ${{ secrets.ALGOLIA_ADMIN_KEY }}
-          ALGOLIA_INDEX_NAME: "22-7-co-blog"
-          ALGOLIA_INDEX_FILE: public/algolia.json
-        run: npm run algolia
+          ALGOLIA_INDEX_NAME: posts
+        run: |
+          if [ -f public/algolia.json ]; then
+            echo "Uploading algolia.json to Algolia..."
+            curl -X POST \
+              "https://${ALGOLIA_APP_ID}-dsn.algolia.net/1/indexes/${ALGOLIA_INDEX_NAME}/batch" \
+              -H "X-Algolia-API-Key: ${ALGOLIA_ADMIN_KEY}" \
+              -H "X-Algolia-Application-Id: ${ALGOLIA_APP_ID}" \
+              -H "Content-Type: application/json" \
+              -d @public/algolia.json
+            echo "Upload completed."
+          else
+            echo "Warning: public/algolia.json not found!"
+          fi
 
   deploy:
     environment:
