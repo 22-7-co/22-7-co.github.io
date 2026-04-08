@@ -91,7 +91,7 @@ jobs:
   notify:
     needs: deploy
     runs-on: ubuntu-latest
-    if: always()                     # 成功和失败都通知（可改成 failure() 只失败时通知）
+    if: always()
     steps:
       - name: Send QQ Email Notification
         uses: dawidd6/action-send-mail@v3
@@ -102,7 +102,7 @@ jobs:
           password: ${{ secrets.QQ_SMTP_AUTH }}
           subject: "【Hugo 博客】构建${{ job.status == 'success' && '成功' || '失败' }} - ${{ github.repository }}"
           to: ${{ secrets.QQ_EMAIL }}
-          from: ${{ secrets.QQ_EMAIL }}          # ← 必须加上这一行！
+          from: ${{ secrets.QQ_EMAIL }}                # 发件人，必须有
           body: |
             仓库：${{ github.repository }}
             工作流：${{ github.workflow }}
