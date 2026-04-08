@@ -89,9 +89,14 @@ jobs:
             exit 1
           fi
 
-          echo "===== 开始诊断 ====="
+          echo "===== 诊断 ====="
+          FILE_HEAD=$(head -c 10 public/algolia.json)
+          if [ "$FILE_HEAD" != "[" ]; then
+            echo "❌ 错误：algolia.json 必须是以 [ 开头的标准数组格式，当前开头是: $FILE_HEAD"
+            exit 1
+          fi
           echo "记录数量: $(jq 'length' public/algolia.json)"
-          echo "==================="
+          echo "==============="
 
           echo "Clearing index..."
           curl -s -X POST "https://${ALGOLIA_APP_ID}-dsn.algolia.net/1/indexes/${ALGOLIA_INDEX_NAME}/clear" \
@@ -102,36 +107,31 @@ jobs:
           BATCH_SIZE=1000
           JSON_LENGTH=$(jq 'length' public/algolia.json)
           BATCH_COUNT=$(( (JSON_LENGTH + BATCH_SIZE - 1) / BATCH_SIZE ))
+          TEMP_FILE="temp_algolia.json"
 
-          # 创建临时文件存放 batch 数据，避免 Shell 变量转义坑
-          TEMP_BATCH_FILE="algolia_temp_batch.json"
-
-          for i in $(seq 0$((BATCH_COUNT - 1))); do
+          # 【关键修改】：换成 C 语言风格的循环，彻底解决 seq 命令报错被 -e 拦截的问题
+          for (( i=0; i<BATCH_COUNT; i++ )); do
             echo "正在上传第 $((i + 1)) 批..."
             
-            # 将数据写入临时文件
-            jq -c ".[$i*$BATCH_SIZE:($i+1)*$BATCH_SIZE] | map({\"action\": \"addObject\", \"body\": .})" public/algolia.json > $TEMP_BATCH_FILE
+            jq -c ".[$i*$BATCH_SIZE:($i+1)*$BATCH_SIZE] | map({\"action\": \"addObject\", \"body\": .})" public/algolia.json > $TEMP_FILE
             
-            # 从临时文件读取并发送
             RESP=$(curl -s -X POST "https://${ALGOLIA_APP_ID}-dsn.algolia.net/1/indexes/${ALGOLIA_INDEX_NAME}/batch" \
               -H "X-Algolia-API-Key: ${ALGOLIA_ADMIN_KEY}" \
               -H "X-Algolia-Application-Id: ${ALGOLIA_APP_ID}" \
               -H "Content-Type: application/json" \
-              -d @$TEMP_BATCH_FILE)
+              -d @$TEMP_FILE)
             
             if echo "$RESP" | grep -q '"taskID"'; then
               echo "✅ 第 $((i + 1)) 批成功"
             else
-              echo "❌ 上传失败！返回：$RESP"
-              rm -f $TEMP_BATCH_FILE
+              echo "❌ 失败！返回：$RESP"
+              rm -f $TEMP_FILE
               exit 1
             fi
           done
 
-          # 清理临时文件
-          rm -f $TEMP_BATCH_FILE
+          rm -f $TEMP_FILE
           echo "🎉 Algolia upload completed."
-
 
   deploy:
     environment:
