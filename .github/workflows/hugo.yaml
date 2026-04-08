@@ -78,7 +78,7 @@ jobs:
           path: ./public
       
       ##  =====  Algolia   ======
-            - name: Upload to Algolia (Clear + Batch Replace)
+      - name: Upload to Algolia (Clear + Batch Replace)
         env:
           ALGOLIA_APP_ID: ${{ secrets.ALGOLIA_APP_ID }}
           ALGOLIA_ADMIN_KEY: ${{ secrets.ALGOLIA_ADMIN_KEY }}
