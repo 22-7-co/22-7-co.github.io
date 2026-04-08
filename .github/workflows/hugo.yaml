@@ -82,7 +82,7 @@ jobs:
         env:
           ALGOLIA_APP_ID: ${{ secrets.ALGOLIA_APP_ID }}
           ALGOLIA_ADMIN_KEY: ${{ secrets.ALGOLIA_ADMIN_KEY }}
-          # 【关键修改】：索引名称已正确设置为 22-7-co-blog
+          # 【关键修改】：将索引名称从 'posts' 改为 '22-7-co-blog'
           ALGOLIA_INDEX_NAME: 22-7-co-blog
         run: |
           if [ ! -f public/algolia.json ]; then
@@ -95,7 +95,6 @@ jobs:
           echo "==============="
 
           echo "Clearing index..."
-          # 【关键修复】：URL 中使用 ${ALGOLIA_INDEX_NAME} 替代硬编码的 'batch'
           curl -s -X POST "https://${ALGOLIA_APP_ID}-dsn.algolia.net/1/indexes/${ALGOLIA_INDEX_NAME}/clear" \
             -H "X-Algolia-API-Key: ${ALGOLIA_ADMIN_KEY}" \
             -H "X-Algolia-Application-Id: ${ALGOLIA_APP_ID}"
@@ -108,9 +107,9 @@ jobs:
           for (( i=0; i<BATCH_COUNT; i++ )); do
             echo "正在上传第 $((i + 1)) 批..."
             
-            # 【关键修复】：URL 中使用 ${ALGOLIA_INDEX_NAME} 替代硬编码的 'batch'
+            # 【关键修改】：在 jq 查询中，将索引名称从 'posts' 改为 '22-7-co-blog'
             RESP=$(jq -c --arg index "$ALGOLIA_INDEX_NAME" ".[$i*$BATCH_SIZE:($i+1)*$BATCH_SIZE] | {requests: map({\"action\": \"addObject\", \"indexName\": \$index, \"body\": .})}" public/algolia.json | \
-              curl -s -X POST "https://${ALGOLIA_APP_ID}-dsn.algolia.net/1/indexes/${ALGOLIA_INDEX_NAME}/batch" \
+              curl -s -X POST "https://${ALGOLIA_APP_ID}-dsn.algolia.net/1/indexes/batch" \
               -H "X-Algolia-API-Key: ${ALGOLIA_ADMIN_KEY}" \
               -H "X-Algolia-Application-Id: ${ALGOLIA_APP_ID}" \
               -H "Content-Type: application/json" \
