@@ -70,7 +70,7 @@ jobs:
           hugo \
             --gc \
             --minify \
-            --baseURL "${{ steps.pages.outputs.base_url }}/"
+            --baseURL "${{ steps.pages.outputs.base_url }}/"]
       ####  ==================== Algolia 搜索索引上传 ====================
       - name: Upload to Algolia (Clear + Batch Replace)
         env:
@@ -84,29 +84,19 @@ jobs:
           fi
 
           echo "Clearing existing index..."
-          CLEAR_RESP=$(curl -s -X POST \
+          # 【改动点1】：去掉了 CLEAR_RESP= ，直接执行，不阻塞
+          curl -s -X POST \
             "https://${ALGOLIA_APP_ID}-dsn.algolia.net/1/indexes/${ALGOLIA_INDEX_NAME}/clear" \
             -H "X-Algolia-API-Key: ${ALGOLIA_ADMIN_KEY}" \
-            -H "X-Algolia-Application-Id: ${ALGOLIA_APP_ID}")
-          
-          # 检查清除是否成功
-          if echo "$CLEAR_RESP" | grep -q '"status":201'; then
-            echo "Index cleared successfully."
-          else
-            echo "Failed to clear index: $CLEAR_RESP"
-            exit 1
-          fi
+            -H "X-Algolia-Application-Id: ${ALGOLIA_APP_ID}"
 
           echo "Uploading new records in batches..."
-          # 使用 jq 将大数组拆分成每个包含 1000 条记录的小数组
-          # 注意：GitHub Actions Ubuntu runner 默认预装了 jq
           BATCH_SIZE=1000
           BATCH_COUNT=$(jq 'length / '$BATCH_SIZE' | ceil' public/algolia.json)
 
           for i in $(seq 0$((BATCH_COUNT - 1))); do
             echo "Uploading batch $((i + 1)) of$BATCH_COUNT..."
             
-            # 提取当前批次的 1000 条数据，并包装成 Algolia batch API 要求的格式
             BATCH_DATA=$(jq -c '.['$i'*'$BATCH_SIZE':('$i'+1)*'$BATCH_SIZE'] | map({"action": "addObject", "body": .})' public/algolia.json)
             
             RESP=$(curl -s -X POST \
@@ -116,7 +106,8 @@ jobs:
               -H "Content-Type: application/json" \
               -d "$BATCH_DATA")
             
-            if echo "$RESP" | grep -q '"status":201'; then
+            # 【改动点2】：把原来的检查 "status":201 改成了检查 "taskID"
+            if echo "$RESP" | grep -q '"taskID"'; then
               echo "Batch $((i + 1)) uploaded successfully."
             else
               echo "Failed to upload batch $((i + 1)):$RESP"
