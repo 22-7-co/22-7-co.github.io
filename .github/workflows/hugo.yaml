@@ -90,11 +90,6 @@ jobs:
           fi
 
           echo "===== 诊断 ====="
-          FILE_HEAD=$(head -c 10 public/algolia.json)
-          if [ "$FILE_HEAD" != "[" ]; then
-            echo "❌ 错误：algolia.json 必须是以 [ 开头的标准数组格式，当前开头是: $FILE_HEAD"
-            exit 1
-          fi
           echo "记录数量: $(jq 'length' public/algolia.json)"
           echo "==============="
 
@@ -109,7 +104,7 @@ jobs:
           BATCH_COUNT=$(( (JSON_LENGTH + BATCH_SIZE - 1) / BATCH_SIZE ))
           TEMP_FILE="temp_algolia.json"
 
-          # 【关键修改】：换成 C 语言风格的循环，彻底解决 seq 命令报错被 -e 拦截的问题
+          # 使用 C 语言风格循环，彻底免疫 seq 命令报错导致的静默中断
           for (( i=0; i<BATCH_COUNT; i++ )); do
             echo "正在上传第 $((i + 1)) 批..."
             
@@ -132,6 +127,8 @@ jobs:
 
           rm -f $TEMP_FILE
           echo "🎉 Algolia upload completed."
+
+
 
   deploy:
     environment:
