@@ -96,14 +96,23 @@ jobs:
       - name: Send QQ Email Notification
         uses: dawidd6/action-send-mail@v3
         with:
-          # 建议改用 465 端口配 secure: true，这是 QQ 邮箱最稳定的方式
-          server_address: smtp.qq.com
+          server_address: ://qq.com
           server_port: 465
           username: ${{ secrets.QQ_EMAIL }}
           password: ${{ secrets.QQ_SMTP_AUTH }}
-          subject: "【Hugo 博客】构建状态：${{ job.status }}"
-          to: "Hugo-Deploy <${{ secrets.QQ_EMAIL }}>"
-          from: "Hugo-Deploy <${{ secrets.QQ_EMAIL }}>"
-          body: "Hugo 博客构建完成！状态: ${{ job.status }} | 仓库: ${{ github.repository }} | 详情: https://github.com{{ github.repository }}/actions/runs/${{ github.run_id }}"
+          # 【核心设计】：状态符号化 + 仓库名 + 触发者，在通知栏就能看全
+          subject: "${{ job.status == 'success' && '✅成功' || '❌失败' }} | Hugo: ${{ github.event.head_commit.message || '手动部署' }} (@${{ github.actor }})"
+          to: ${{ secrets.QQ_EMAIL }}
+          from: "Hugo 机器人 <${{ secrets.QQ_EMAIL }}>"
           secure: true
+          # 邮件正文：提供更详细的链接和环境信息
+          body: |
+            ## 构建报告 ##
+            状态：${{ job.status }}
+            触发人：${{ github.actor }}
+            提交信息：${{ github.event.head_commit.message }}
+            仓库分支：${{ github.repository }} / ${{ github.ref_name }}
+            
+            查看详情：https://github.com{{ github.repository }}/actions/runs/${{ github.run_id }}
+            在线预览：https://${{ github.repository_owner }}.github.io/
           html_body: false
