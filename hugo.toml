@@ -1,4 +1,4 @@
 baseURL = 'https://22-7-co.github.io/'
 locale = 'zh-CN'
 title = "22-7's information"
-theme = 'ananke'
+theme = 'reimu'

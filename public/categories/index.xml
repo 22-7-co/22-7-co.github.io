@@ -3,9 +3,19 @@
   <channel>
     <title>Categories on 22-7&#39;s information</title>
     <link>https://22-7-co.github.io/categories/</link>
-    <description>Recent content in Categories on 22-7&#39;s information</description>
+    <description>Recent content from 22-7&#39;s information</description>
     <generator>Hugo</generator>
     <language>zh-CN</language>
-    <atom:link href="https://22-7-co.github.io/categories/index.xml" rel="self" type="application/rss+xml" />
+    
+    <managingEditor>xxx@example.com (D-Sketon)</managingEditor>
+    <webMaster>xxx@example.com (D-Sketon)</webMaster>
+    
+    <copyright>本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！</copyright>
+    
+    
+    <atom:link href="https://22-7-co.github.io/categories/index.xml" rel="self" type="application/rss&#43;xml" />
+    
+
+    
   </channel>
 </rss>
