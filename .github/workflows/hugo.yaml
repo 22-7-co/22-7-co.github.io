@@ -100,9 +100,8 @@ jobs:
           server_port: 587
           username: ${{ secrets.QQ_EMAIL }}
           password: ${{ secrets.QQ_SMTP_AUTH }}
-          subject: "【Hugo 博客】构建${{ job.status == 'success' && '成功' || '失败' }} - ${{ github.repository }}"
+          subject: "【Hugo 博客】构建完成 - ${{ github.repository }}"
           to: ${{ secrets.QQ_EMAIL }}
-          from: ${{ secrets.QQ_EMAIL }}                    # 必须有，且和上面参数对齐
-          body: "Hugo 博客构建完成！状态: ${{ job.status }} | 仓库: ${{ github.repository }} | 分支: ${{ github.ref }} | 详情: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-          html_body: false
-          secure: true
+          from: ${{ secrets.QQ_EMAIL }}
+          body: "Hugo 博客构建完成！状态: ${{ job.status }}"
+          secure: false
