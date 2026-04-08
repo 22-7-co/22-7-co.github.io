@@ -96,23 +96,21 @@ jobs:
       - name: Send QQ Email Notification
         uses: dawidd6/action-send-mail@v3
         with:
-          server_address: ://qq.com
-          server_port: 465
+          server_address: smtp.qq.com
+          server_port: 587
           username: ${{ secrets.QQ_EMAIL }}
           password: ${{ secrets.QQ_SMTP_AUTH }}
-          # 【核心设计】：状态符号化 + 仓库名 + 触发者，在通知栏就能看全
-          subject: "${{ job.status == 'success' && '✅成功' || '❌失败' }} | Hugo: ${{ github.event.head_commit.message || '手动部署' }} (@${{ github.actor }})"
+          subject: "${{ needs.deploy.result == 'success' && '✅ Hugo部署成功' || '❌ Hugo部署失败' }} - ${{ github.repository }}"
           to: ${{ secrets.QQ_EMAIL }}
-          from: "Hugo 机器人 <${{ secrets.QQ_EMAIL }}>"
+          from: ${{ secrets.QQ_EMAIL }}
           secure: true
-          # 邮件正文：提供更详细的链接和环境信息
           body: |
-            ## 构建报告 ##
-            状态：${{ job.status }}
-            触发人：${{ github.actor }}
-            提交信息：${{ github.event.head_commit.message }}
-            仓库分支：${{ github.repository }} / ${{ github.ref_name }}
+            项目: ${{ github.repository }}
+            状态: ${{ needs.deploy.result }}
+            提交人: ${{ github.actor }}
+            提交信息: ${{ github.event.head_commit.message }}
             
-            查看详情：https://github.com{{ github.repository }}/actions/runs/${{ github.run_id }}
+            查看 Action 运行详情:
+            https://github.com{{ github.repository }}/actions/runs/${{ github.run_id }}
             在线预览：https://${{ github.repository_owner }}.github.io/
           html_body: false
