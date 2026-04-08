@@ -87,7 +87,7 @@ jobs:
       - name: 部署到 GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v5   # ← 已更新到 v5（这是你原脚本最需要改的地方）
-  # 部署后提醒
+  # ==================== QQ 邮箱通知 ====================
   notify:
     needs: deploy
     runs-on: ubuntu-latest
@@ -102,17 +102,7 @@ jobs:
           password: ${{ secrets.QQ_SMTP_AUTH }}
           subject: "【Hugo 博客】构建${{ job.status == 'success' && '成功' || '失败' }} - ${{ github.repository }}"
           to: ${{ secrets.QQ_EMAIL }}
-          from: ${{ secrets.QQ_EMAIL }}                # 发件人，必须有
-          body: |
-            仓库：${{ github.repository }}
-            工作流：${{ github.workflow }}
-            状态：${{ job.status }}
-            分支：${{ github.ref }}
-            提交：${{ github.sha }}
-            触发者：${{ github.actor }}
-            
-            构建时间：${{ github.event.head_commit.timestamp }}
-            
-            查看详情：https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          from: ${{ secrets.QQ_EMAIL }}                    # 必须有，且和上面参数对齐
+          body: "Hugo 博客构建完成！状态: ${{ job.status }} | 仓库: ${{ github.repository }} | 分支: ${{ github.ref }} | 详情: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           html_body: false
           secure: true
