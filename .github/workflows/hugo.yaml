@@ -78,51 +78,35 @@ jobs:
           path: ./public
       
       ##  =====  Algolia   ======
-      - name: Upload to Algolia (Clear + Batch Replace)
+      - name: Upload to Algolia (Debug)
         env:
           ALGOLIA_APP_ID: ${{ secrets.ALGOLIA_APP_ID }}
           ALGOLIA_ADMIN_KEY: ${{ secrets.ALGOLIA_ADMIN_KEY }}
           ALGOLIA_INDEX_NAME: posts
         run: |
-          if [ ! -f public/algolia.json ]; then
-            echo "Error: public/algolia.json not found!"
-            exit 1
-          fi
-
-          echo "===== 诊断 ====="
           echo "记录数量: $(jq 'length' public/algolia.json)"
-          echo "==============="
-
           echo "Clearing index..."
           curl -s -X POST "https://${ALGOLIA_APP_ID}-dsn.algolia.net/1/indexes/${ALGOLIA_INDEX_NAME}/clear" \
             -H "X-Algolia-API-Key: ${ALGOLIA_ADMIN_KEY}" \
             -H "X-Algolia-Application-Id: ${ALGOLIA_APP_ID}"
 
-          echo "Uploading..."
-          BATCH_SIZE=1000
-          JSON_LENGTH=$(jq 'length' public/algolia.json)
-          BATCH_COUNT=$(( (JSON_LENGTH + BATCH_SIZE - 1) / BATCH_SIZE ))
+          echo "准备构造 Batch 数据..."
+          # 构造数据并存入临时文件
+          jq -c '.[0:1000] | map({"action": "addObject", "body": .})' public/algolia.json > debug_batch.json
+          
+          echo "===== 下面是准备发给 Algolia 的数据前 200 个字符 ====="
+          head -c 200 debug_batch.json
+          echo ""
+          echo "======================================================"
 
-          for (( i=0; i<BATCH_COUNT; i++ )); do
-            echo "正在上传第 $((i + 1)) 批..."
+          echo "正在发送..."
+          RESP=$(curl -s -X POST "https://${ALGOLIA_APP_ID}-dsn.algolia.net/1/indexes/${ALGOLIA_INDEX_NAME}/batch" \
+            -H "X-Algolia-API-Key: ${ALGOLIA_ADMIN_KEY}" \
+            -H "X-Algolia-Application-Id: ${ALGOLIA_APP_ID}" \
+            -H "Content-Type: application/json" \
+            -d @debug_batch.json)
             
-            # 【终极方案】：jq 直接通过管道输出给 curl，绝不经过任何中间文件或变量
-            RESP=$(jq -c ".[$i*$BATCH_SIZE:($i+1)*$BATCH_SIZE] | map({\"action\": \"addObject\", \"body\": .})" public/algolia.json | \
-              curl -s -X POST "https://${ALGOLIA_APP_ID}-dsn.algolia.net/1/indexes/${ALGOLIA_INDEX_NAME}/batch" \
-              -H "X-Algolia-API-Key: ${ALGOLIA_ADMIN_KEY}" \
-              -H "X-Algolia-Application-Id: ${ALGOLIA_APP_ID}" \
-              -H "Content-Type: application/json" \
-              -d @-)
-            
-            if echo "$RESP" | grep -q '"taskID"'; then
-              echo "✅ 第 $((i + 1)) 批成功"
-            else
-              echo "❌ 失败！返回：$RESP"
-              exit 1
-            fi
-          done
-
-          echo "🎉 Algolia upload completed."
+          echo "Algolia 返回结果: $RESP"
 
 
   deploy:
