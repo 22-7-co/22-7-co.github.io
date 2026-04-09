@@ -39,9 +39,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm' # 自动缓存 node_modules
-
-      # 优化 2: 使用官方 Hugo Action，自带快速提取和缓存
+          
       - name: 安装 Hugo
         uses: peaceiris/actions-hugo@v3
         with:
