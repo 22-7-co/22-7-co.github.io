@@ -83,11 +83,7 @@ jobs:
         with:
           node-version: '18' # 使用稳定版本
 
-      - name: 安装 Algolia 客户端
-        run: |
-          npm install algoliasearch
-
-            - name: 上传到 Algolia
+      - name: 上传到 Algolia
         env:
           ALGOLIA_APP_ID: ${{ secrets.ALGOLIA_APP_ID }}
           ALGOLIA_ADMIN_KEY: ${{ secrets.ALGOLIA_ADMIN_KEY }}
