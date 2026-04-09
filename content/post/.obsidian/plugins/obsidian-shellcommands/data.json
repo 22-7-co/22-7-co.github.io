@@ -26,7 +26,7 @@
     {
       "id": "xgpbzx44gr",
       "platform_specific_commands": {
-        "default": "cd  /home/22-7/Dev/Blog/quickstart && hugo --quiet && git add . && git commit -m \"Obsidian update\" && git push origin main"
+        "default": "cd  /home/22-7/Dev/Blog/quickstart && hugo --quiet && git add . && git commit -m \"Obsidian update\" && git push "
       },
       "shells": {},
       "alias": "一键发布博客",
