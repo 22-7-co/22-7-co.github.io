@@ -11,3 +11,8 @@ baseName = "algolia"
 isPlainText = true
 mediaType = "application/json"
 notAlternative = true
+
+# 为保证代码块的正确显示
+[markup.highlight]
+guessSyntax = true
+noClasses = false
