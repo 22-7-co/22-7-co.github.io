@@ -1,6 +1,6 @@
 ---
 title:
-date: 2026-04-09
+date:
 draft:
 tags:
 categories:

@@ -2,13 +2,10 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://22-7-co.github.io/post/</loc>
-    <lastmod>2026-04-09T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://22-7-co.github.io/post/templates/hugo-post.md/</loc>
-    <lastmod>2026-04-09T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>https://22-7-co.github.io/</loc>
+    <lastmod>2026-04-09T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://22-7-co.github.io/post/</loc>
     <lastmod>2026-04-09T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://22-7-co.github.io/post/2.test/</loc>
@@ -42,5 +39,7 @@
     <lastmod>2026-04-08T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://22-7-co.github.io/archives/</loc>
+  </url><url>
+    <loc>https://22-7-co.github.io/post/templates/</loc>
   </url>
 </urlset>
