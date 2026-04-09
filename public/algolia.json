@@ -6,12 +6,6 @@
     "updated": "2026-04-09 00:00:00"
   }, 
   {
-    "objectID": "143d8cbb65ffb8c5db2a8b1a69d5412d436675ee",
-    "permalink": "/post/2.test/",
-    "title": "test","content": "这是一个测试文件\n","date": "2026-04-09 00:00:00",
-    "updated": "2026-04-09 00:00:00"
-  }, 
-  {
     "objectID": "3b6da64646cad4bd0299e4dcb2f556d8a1b2bc89",
     "permalink": "/post/1.my-first-post/",
     "title": "从零开始用 Hugo 搭建个人博客（搭建博客传统，第一条博客教别人搭）","content": " 为什么选择 Hugo 搭建个人博客？ 在搭建个人博客时，我对比过 Hexo、WordPress、Next.js 等方案，最终选择了 Hugo。\n主要原因如下：\n极致速度：Hugo 是目前公认的“世界上最快的静态站点生成器”。用 Go 语言编写，即使你的博客有上千篇文章，构建时间也通常在几秒钟内完成（很多时候不到 1 秒）。本地预览和部署都非常流畅。 安全且维护成本低：生成的是纯静态 HTML 文件，没有数据库，没有后端脚本，几乎不可能被 SQL 注入或恶意攻击。部署后基本“一次部署，长期稳定”。 完全免费 + 轻量：配合 GitHub Pages、Cloudflare Pages 等免费平台使用，零服务器成本。只需要一个二进制文件就能运行，不需要 Node.js、Ruby 等复杂环境。 Markdown 写作友好：所有文章用 Markdown 编写，专注内容本身，不用操心样式。 主题丰富，灵活性强：有几百个高质量主题（我目前用的是 Reimu 主题，颜值和功能都很不错）。 一句话总结：如果你想要速度快、安全、省钱、长期好维护的个人博客或作品集，Hugo 是目前最优的选择之一。\n第一步：安装 Hugo Hugo快速入手教程： Hugo\n第二步: 安装 Reimu 主题 Reimu 项目地址：Reimu\n第三步: 挂载到Github Pages Github pages快速入门地址: Github Pages\nFinished 目前你的博客应该可以正常运行了！\n搭建过程中应该会遇到问题，相信你能凭借 AI 和 自己的智慧解决一切困难。\n下一篇文章见～\n","date": "2026-04-08 00:00:00",
