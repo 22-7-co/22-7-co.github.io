@@ -78,52 +78,43 @@ jobs:
           path: ./public
       
       ##  =====  Algolia   ======
-      - name: Upload to Algolia (Clear + Batch Replace)
+      - name: 设置 Node.js 环境
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18' # 使用稳定版本
+
+      - name: 安装 Algolia 客户端
+        run: |
+          npm install algoliasearch
+
+      - name: 上传到 Algolia
         env:
           ALGOLIA_APP_ID: ${{ secrets.ALGOLIA_APP_ID }}
           ALGOLIA_ADMIN_KEY: ${{ secrets.ALGOLIA_ADMIN_KEY }}
-          # 【关键修改】：将索引名称从 'posts' 改为 '22-7-co-blog'
-          ALGOLIA_INDEX_NAME: 22-7-co-blog
+          ALGOLIA_INDEX_NAME: 22-7-co-blog # 【关键】使用您正确的索引名
         run: |
-          if [ ! -f public/algolia.json ]; then
-            echo "Error: public/algolia.json not found!"
-            exit 1
-          fi
-
-          echo "===== 诊断 ====="
-          echo "记录数量: $(jq 'length' public/algolia.json)"
-          echo "==============="
-
-          echo "Clearing index..."
-          curl -s -X POST "https://${ALGOLIA_APP_ID}-dsn.algolia.net/1/indexes/${ALGOLIA_INDEX_NAME}/clear" \
-            -H "X-Algolia-API-Key: ${ALGOLIA_ADMIN_KEY}" \
-            -H "X-Algolia-Application-Id: ${ALGOLIA_APP_ID}"
-
-          echo "Uploading..."
-          BATCH_SIZE=1000
-          JSON_LENGTH=$(jq 'length' public/algolia.json)
-          BATCH_COUNT=$(( (JSON_LENGTH + BATCH_SIZE - 1) / BATCH_SIZE ))
-
-          for (( i=0; i<BATCH_COUNT; i++ )); do
-            echo "正在上传第 $((i + 1)) 批..."
+          # 使用 Node.js 脚本上传数据
+          node -e "
+            const algoliasearch = require('algoliasearch');
+            const fs = require('fs');
             
-            # 【关键修改】：在 jq 查询中，将索引名称从 'posts' 改为 '22-7-co-blog'
-            RESP=$(jq -c --arg index "$ALGOLIA_INDEX_NAME" ".[$i*$BATCH_SIZE:($i+1)*$BATCH_SIZE] | {requests: map({\"action\": \"addObject\", \"indexName\": \$index, \"body\": .})}" public/algolia.json | \
-              curl -s -X POST "https://${ALGOLIA_APP_ID}-dsn.algolia.net/1/indexes/batch" \
-              -H "X-Algolia-API-Key: ${ALGOLIA_ADMIN_KEY}" \
-              -H "X-Algolia-Application-Id: ${ALGOLIA_APP_ID}" \
-              -H "Content-Type: application/json" \
-              -d @-)
+            // 初始化 Algolia 客户端
+            const client = algoliasearch(process.env.ALGOLIA_APP_ID, process.env.ALGOLIA_ADMIN_KEY);
+            const index = client.initIndex(process.env.ALGOLIA_INDEX_NAME);
             
-            if echo "$RESP" | grep -q '"taskID"'; then
-              echo "✅ 第 $((i + 1)) 批成功"
-            else
-              echo "❌ 失败！返回：$RESP"
-              exit 1
-            fi
-          done
-
-          echo "🎉 Algolia upload completed."
+            // 读取 algolia.json 文件
+            const records = JSON.parse(fs.readFileSync('public/algolia.json', 'utf8'));
+            
+            // 清空索引
+            console.log('正在清空 Algolia 索引...');
+            await index.clearObjects();
+            
+            // 上传新记录
+            console.log('正在上传记录...');
+            const result = await index.saveObjects(records);
+            
+            console.log('Algolia 上传完成:', result);
+          "
 
 
   deploy:
