@@ -27,6 +27,10 @@ defaults:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      HUGO_VERSION: 0.160.0          # ← 更新到最新稳定版（2026 年 4 月）
+      DART_SASS_VERSION: 1.99.0      # ← 推荐版本
+
     steps:
       - name: 检出仓库
         uses: actions/checkout@v4
@@ -34,50 +38,60 @@ jobs:
           submodules: recursive
           fetch-depth: 0
 
-      # 优化 1: 合并 Node 环境设置并开启缓存
-      - name: 设置 Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm' # 自动缓存 node_modules
-
-      # 优化 2: 使用官方 Hugo Action，自带快速提取和缓存
-      - name: 安装 Hugo
-        uses: peaceiris/actions-hugo@v3
-        with:
-          hugo-version: '0.160.0'
-          extended: true
-
-      # 优化 3: 合并所有依赖安装
-      - name: 安装所有依赖
-        run: |
-          # 如果有 package.json 就安装，否则只安装 algolia 用的包
-          if [[ -f package.json ]]; then
-            npm install
-          else
-            npm install algoliasearch
-          fi
-
       - name: 设置 GitHub Pages
         id: pages
-        uses: actions/configure-pages@v5
+        uses: actions/configure-pages@v5   # ← 更新到 v5/v6
+
+      - name: 安装 Hugo CLI (Extended)
+        run: |
+          wget -O ${{ runner.temp }}/hugo.deb \
+            https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_extended_${HUGO_VERSION}_linux-amd64.deb \
+          && sudo dpkg -i ${{ runner.temp }}/hugo.deb
+
+      - name: 安装 Dart Sass（推荐方式）
+        run: |
+          mkdir -p ${{ runner.temp }}/dart-sass
+          curl -L -o ${{ runner.temp }}/dart-sass.tar.gz \
+            https://github.com/sass/dart-sass/releases/download/${DART_SASS_VERSION}/dart-sass-${DART_SASS_VERSION}-linux-x64.tar.gz
+          tar -xzf ${{ runner.temp }}/dart-sass.tar.gz -C ${{ runner.temp }}
+          echo "${{ runner.temp }}/dart-sass" >> $GITHUB_PATH
+
+      - name: 安装 Node.js 依赖（如果有）
+        run: |
+          if [[ -f package-lock.json || -f npm-shrinkwrap.json ]]; then
+            npm ci
+          fi
 
       - name: 使用 Hugo 构建
+        env:
+          HUGO_ENVIRONMENT: production
+          HUGO_ENV: production
         run: |
-          hugo --gc --minify --baseURL "${{ steps.pages.outputs.base_url }}/"
+          hugo \
+            --gc \
+            --minify \
+            --baseURL "${{ steps.pages.outputs.base_url }}/"
 
       - name: 上传构建产物
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v3   # ← 推荐 v3（更稳定）
         with:
           path: ./public
+      
+      ##  =====  Algolia   ======
+      - name: 设置 Node.js 环境
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18' # 使用稳定版本
 
-      # 优化 4: 直接运行脚本，不再重复 setup-node
       - name: 上传到 Algolia
         env:
           ALGOLIA_APP_ID: ${{ secrets.ALGOLIA_APP_ID }}
           ALGOLIA_ADMIN_KEY: ${{ secrets.ALGOLIA_ADMIN_KEY }}
           ALGOLIA_INDEX_NAME: 22-7-co-blog
-        run: node scripts/algolia-upload.js
+        run: |
+          npm install algoliasearch
+          node scripts/algolia-upload.js
+
 
   deploy:
     environment:
