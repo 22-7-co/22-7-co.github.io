@@ -87,7 +87,7 @@ jobs:
         run: |
           npm install algoliasearch
 
-      - name: 上传到 Algolia
+            - name: 上传到 Algolia
         env:
           ALGOLIA_APP_ID: ${{ secrets.ALGOLIA_APP_ID }}
           ALGOLIA_ADMIN_KEY: ${{ secrets.ALGOLIA_ADMIN_KEY }}
@@ -98,22 +98,28 @@ jobs:
             const algoliasearch = require('algoliasearch');
             const fs = require('fs');
             
-            // 初始化 Algolia 客户端
-            const client = algoliasearch(process.env.ALGOLIA_APP_ID, process.env.ALGOLIA_ADMIN_KEY);
-            const index = client.initIndex(process.env.ALGOLIA_INDEX_NAME);
+            // 定义一个 async 函数
+            async function uploadToAlgolia() {
+              // 初始化 Algolia 客户端
+              const client = algoliasearch(process.env.ALGOLIA_APP_ID, process.env.ALGOLIA_ADMIN_KEY);
+              const index = client.initIndex(process.env.ALGOLIA_INDEX_NAME);
+              
+              // 读取 algolia.json 文件
+              const records = JSON.parse(fs.readFileSync('public/algolia.json', 'utf8'));
+              
+              // 清空索引
+              console.log('正在清空 Algolia 索引...');
+              await index.clearObjects();
+              
+              // 上传新记录
+              console.log('正在上传记录...');
+              const result = await index.saveObjects(records);
+              
+              console.log('Algolia 上传完成:', result);
+            }
             
-            // 读取 algolia.json 文件
-            const records = JSON.parse(fs.readFileSync('public/algolia.json', 'utf8'));
-            
-            // 清空索引
-            console.log('正在清空 Algolia 索引...');
-            await index.clearObjects();
-            
-            // 上传新记录
-            console.log('正在上传记录...');
-            const result = await index.saveObjects(records);
-            
-            console.log('Algolia 上传完成:', result);
+            // 执行函数
+            uploadToAlgolia();
           "
 
 
