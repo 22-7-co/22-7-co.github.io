@@ -39,7 +39,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          
+
       - name: 安装 Hugo
         uses: peaceiris/actions-hugo@v3
         with:
@@ -47,14 +47,14 @@ jobs:
           extended: true
 
       # 优化 3: 合并所有依赖安装
-      - name: 安装所有依赖
+      - name: 安装依赖
         run: |
-          # 如果有 package.json 就安装，否则只安装 algolia 用的包
+          # 1. 先安装 package.json 里的原有依赖（如果有的话）
           if [[ -f package.json ]]; then
             npm install
-          else
-            npm install algoliasearch
           fi
+          # 2. 额外强制安装 algoliasearch，确保脚本一定能跑
+          npm install algoliasearch
 
       - name: 设置 GitHub Pages
         id: pages
