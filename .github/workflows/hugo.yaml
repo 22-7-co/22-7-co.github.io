@@ -89,7 +89,10 @@ jobs:
           ALGOLIA_ADMIN_KEY: ${{ secrets.ALGOLIA_ADMIN_KEY }}
           ALGOLIA_INDEX_NAME: 22-7-co-blog # 【关键】使用您正确的索引名
         run: |
-          # 使用 Node.js 脚本上传数据
+          # 1. 安装 algoliasearch 包
+          npm install algoliasearch
+
+          # 2. 使用 Node.js 脚本上传数据
           node -e "
             const algoliasearch = require('algoliasearch');
             const fs = require('fs');
