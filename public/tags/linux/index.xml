@@ -31,8 +31,8 @@
         <![CDATA[<h1>linux配置管理: stow 和 .dotfiles</h1><p>作者：22/7.（x22han7@gmail.com）</p>
         
           <blockquote>
-<p><strong>前言</strong> 在 玩Linux时 （尤其是折腾 Arch、Niri、Hyprland 等 Wayland 桌面时），配置文件（Dotfiles）就是我们的身家性命。随着系统越来越定制化，单纯的复制粘贴已经无法满足我们在多套配置（比如自写极简版与开源套件版）之间灵活切换的需求。
-这次借着折腾新环境的机会，我全面引入了 <code>GNU Stow</code> 来接管我的 dotfiles。中间踩了不少坑，特此记录，希望能帮到同样在折腾桌面的你。</p>
+<p><strong>前言</strong> 在 玩Linux时 （尤其是折腾 Arch、Niri、Hyprland 等 Wayland 桌面时），配置文件（Dotfiles）就是我们的身家性命。随着系统越来越定制化，单纯的复制粘贴已经无法满足我们在多套配置（比如自写极简版与开源套件版）之间灵活切换的需求。</p>
+<p>这次借着折腾新环境的机会，我全面引入了 <code>GNU Stow</code> 来接管我的 dotfiles。中间踩了不少坑，特此记录，希望能帮到同样在折腾桌面的你。</p>
 </blockquote>
 <h2 id="一-为什么是-stow">
 <a class="header-anchor" href="#%e4%b8%80-%e4%b8%ba%e4%bb%80%e4%b9%88%e6%98%af-stow"></a>
@@ -41,15 +41,9 @@
 <p><strong>GNU Stow 的核心哲学是“偷天换日（软链接）”。</strong></p>
 <p>我们只需要在用户目录建一个“配置目录”（比如 <code>~/.dotfiles</code>），把所有的真实配置按照系统的目录层级塞进去，然后用 Stow 建立软链接，映射回 <code>~/.config</code> 里。</p>
 <ul>
-<li>
-<p><strong>隔离性</strong>：系统依然去 <code>~/.config/niri</code> 找配置，但它不知道这只是一个指向 <code>dotfiles</code> 的传送门。</p>
-</li>
-<li>
-<p><strong>版本控制</strong>：Git 只需要在 <code>~/dotfiles</code> 这个纯净的文件夹里工作。</p>
-</li>
-<li>
-<p><strong>一键换肤</strong>：随时撤销软链接，挂载另一套配置。</p>
-</li>
+<li><strong>隔离性</strong>：系统依然去 <code>~/.config/niri</code> 找配置，但它不知道这只是一个指向 <code>dotfiles</code> 的传送门。</li>
+<li><strong>版本控制</strong>：Git 只需要在 <code>~/dotfiles</code> 这个纯净的文件夹里工作。</li>
+<li><strong>一键换肤</strong>：随时撤销软链接，挂载另一套配置。</li>
 </ul>
 <hr>
 <h2 id="二-基础实战从零开始映射配置">
@@ -69,7 +63,8 @@
 <h3 id="3-执行-stow-魔法">
 <a class="header-anchor" href="#3-%e6%89%a7%e8%a1%8c-stow-%e9%ad%94%e6%b3%95"></a>
 3. 执行 Stow 魔法
-</h3><p>在 <code>~/.dotfiles</code>目录执行 <code>stow niri</code>，这个命令会自动根据层级关系将配置挂载到对应目录：</p>
+</h3><p>在 <code>~/.dotfiles</code>目录执行 <code>stow niri</code>，这个命令会自动根据层级关系将配置挂载到对应目录：
+此时执行 <code>ls -l ~/.config/niri</code>，如果看到 <code>-&gt;</code> 箭头指向你的 dotfiles 目录，恭喜，第一步成功了。</p>
         
         <hr><p>本文2026-04-20首发于<a href='https://22-7-co.github.io/'>22-7's information</a>，最后修改于2026-04-20</p>]]>
       </description>
