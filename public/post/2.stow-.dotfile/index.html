@@ -106,7 +106,7 @@
       <ul>
         <li><a href="#1-建立配置目录与层级结构">1. 建立配置目录与层级结构</a></li>
         <li><a href="#2-转移真实文件">2. 转移真实文件</a></li>
-        <li><a href="#3-执行-stow-魔法">3. 执行 Stow 魔法</a></li>
+        <li><a href="#3-执行-stow">3. 执行 Stow</a></li>
         <li><a href="#4-切换桌面">4. 切换桌面</a></li>
         <li><a href="#5-通过-git-管理">5. 通过 git 管理</a></li>
       </ul>
@@ -258,9 +258,9 @@
 </h3><p>把现在正在用的配置“连锅端”移进来：
 通过 <code>mv</code> 移动到 <code>~/.dotfiles</code>下，放心，就算桌面配置丢了，系统也不会崩溃。
 假如你现在的配置是 <code>niri</code>, 那就放在 <code>~/.dotfiles/niri</code>下</p>
-<h3 id="3-执行-stow-魔法">
-<a class="header-anchor" href="#3-%e6%89%a7%e8%a1%8c-stow-%e9%ad%94%e6%b3%95"></a>
-3. 执行 Stow 魔法
+<h3 id="3-执行-stow">
+<a class="header-anchor" href="#3-%e6%89%a7%e8%a1%8c-stow"></a>
+3. 执行 Stow
 </h3><p>在 <code>~/.dotfiles</code>目录执行 <code>stow niri</code>，这个命令会自动根据层级关系将配置挂载到对应目录：
 此时执行 <code>ls -l ~/.config/niri</code>，如果看到 <code>-&gt;</code> 箭头指向你的 dotfiles 目录，恭喜，第一步成功了。</p>
 <h3 id="4-切换桌面">
@@ -359,7 +359,7 @@
       <ul>
         <li><a href="#1-建立配置目录与层级结构">1. 建立配置目录与层级结构</a></li>
         <li><a href="#2-转移真实文件">2. 转移真实文件</a></li>
-        <li><a href="#3-执行-stow-魔法">3. 执行 Stow 魔法</a></li>
+        <li><a href="#3-执行-stow">3. 执行 Stow</a></li>
         <li><a href="#4-切换桌面">4. 切换桌面</a></li>
         <li><a href="#5-通过-git-管理">5. 通过 git 管理</a></li>
       </ul>
